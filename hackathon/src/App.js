@@ -44,7 +44,7 @@ class App extends Component {
   }
   myFetch(){
 
-      fetch(ap+this.state.text+"&lat="+this.state.lat+"&lon="+this.state.long+"&radius=9000000")
+      fetch(ap+this.state.text+"&lat="+this.state.lat+"&lon="+this.state.long+"&radius=30")
          .then((response) => response.json())
 
          .then((res) =>
