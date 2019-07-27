@@ -4,10 +4,14 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import CardMedia from '@material-ui/core/CardMedia';
 import Card from '@material-ui/core/Card'
-import LinearProgress from '@material-ui/core/LinearProgress';
-import { makeStyles } from '@material-ui/core/styles';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { withStyles } from '@material-ui/core/styles';
 const ap = "https://biocache-ws.ala.org.au/ws/occurrences/search?q=";
+
+const ScoreTotal = withStyles(theme =>({
+  root: {
+  },
+}))(CircularProgress);
 
 const styles = {
     logo: {
@@ -36,7 +40,6 @@ class App extends Component {
       July: null,
       fish: "",
       hasClicked: false,
-      text: "",
      occurrences: null,
      lat : null,
      long : null,
@@ -45,7 +48,7 @@ class App extends Component {
   }
 
   myLocalFetch(){
-      fetch(ap+this.state.fish+"&lat="+this.state.lat+"&lon="+this.state.long+"&radius=30")
+      fetch(ap+ this.state.fish.toLowerCase().replace(/ /g,"+")+"&lat="+this.state.lat+"&lon="+this.state.long+"&radius=30")
          .then((response) => response.json())
 
          .then((res) =>
@@ -54,7 +57,7 @@ class App extends Component {
                this.setState({occurrences: res.totalRecords})})
    }
    myGlobalFetch(){
-       fetch(ap+this.state.fish)
+       fetch(ap+this.state.fish.toLowerCase().replace(/ /g,"+"))
           .then((response) => response.json())
 
           .then((res) =>
@@ -91,7 +94,7 @@ class App extends Component {
   Search = (num) => {
       this.setState({hasClicked: true})
       this.setState({fish: this.state.text})
-      fetch("https://fishbase.ropensci.org/comnames?ComName=" + this.state.fish)
+      fetch("https://fishbase.ropensci.org/comnames?ComName=" + this.state.fish.toLowerCase().replace(/ /g,"+"))
           .then(res => res.json())
           .then(
             (result) => {
@@ -135,7 +138,7 @@ class App extends Component {
     calcScore(num, spawn, occ) {
         let score = 100;
         if (spawn !== 0){
-            score -= 50;
+            score -= 25;
         }
         if (num === 0){
             if(occ >= 300);
@@ -158,14 +161,38 @@ class App extends Component {
         let longitude = this.state.long;
         let infoSection;
         let score;
-        score = this.calcScore(0,this.state.July,test);
-        score = score.toFixed(2);
+        let popScore;
+
+
         if (this.state.hasClicked) {
+            score = this.calcScore(this.state.userType,this.state.July,test);
+            score = score.toFixed(2);
+            if (this.state.userType === 0){
+                if(test >= 300){
+                    popScore = 100;
+                }
+                else{
+                    popScore -= ((500 - test)/500) * 100;
+                }
+            }
+            else if (this.state.userType === 1){
+                if(test >= 2500){
+                    popScore = 100;
+                }
+                else{
+                    popScore -= ((2500 - test)/2500) * 100;
+                }
+            }
+            console.log(popScore);
           infoSection = <div style={{fontSize: "50px"}}>
           <p>{this.state.fish}<br/>
           Score: {score}</p>
+          <ScoreTotal variant = "static" value = {score} color = "secondary"/>
+
           {this.state.userType === 1 && <p>
-              There are {test} in  Australia </p>
+              There are {test} in Australia </p>
+
+
           }
           {this.state.userType !== 1 && <p>
                There are {test} in your local area</p>
