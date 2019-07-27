@@ -7,7 +7,7 @@ import Card from '@material-ui/core/Card'
 import { makeStyles } from '@material-ui/core/styles';
 
 
-const url = "http://localhost:5000/recipe";
+const ap = "https://biocache-ws.ala.org.au/ws/occurrences/search?q=";
 
 const styles = {
     logo: {
@@ -36,14 +36,39 @@ class App extends Component {
       July: null,
       number: 0,
       canClick: false,
-      text: ""
+      text: "",
+     occurrences: null,
+     lat : null,
+     long : null,
     };
   }
+  myFetch(){
+
+      fetch(ap+this.state.text+"&lat="+this.state.lat+"&lon="+this.state.long+"&radius=9000000")
+         .then((response) => response.json())
+
+         .then((res) =>
+               {console.log(res.totalRecords)
+                console.log(res)
+               this.setState({occurrences: res.totalRecords})})
+   }
   HandleText = (e) =>{
       console.log(e.target.value)
       this.setState({text:e.target.value})
   }
 
+  componentWillMount() {
+        if(navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(position => {
+                      console.log(position.coords);
+                      this.setState({lat : position.coords.latitude})
+                      this.setState({long : position.coords.longitude})
+                      });
+              } else {
+                  console.error("Geolocation is not supported by this browser!");
+          }
+
+    }
   Search = () => {
       this.state.canClick = true
       fetch("https://fishbase.ropensci.org/comnames?ComName=" + this.state.text)
@@ -59,6 +84,7 @@ class App extends Component {
                         this.setState({
                           July: result.data[0].Jul
                         });
+                        this.myFetch();
                       },
                       // Note: it's important to handle errors here
                       // instead of a catch() block so that we don't swallow
@@ -84,9 +110,13 @@ class App extends Component {
 }
 
     render(){
+        let test = this.state.occurrences;
+        let latitude = this.state.lat;
+        let longitude = this.state.long;
         let score;
         if (this.state.canClick) {
-          score = <div style={{fontSize: "100px"}}>
+          score = <div style={{fontSize: "50px"}}>
+          <p>There are {test} {this.state.text} in Australia<br/>You are at {latitude}, {longitude}<br/> I am coming for you</p>
             {this.state.July != null && <Card>
                 <CardMedia
                   image={require('./pictures/sad.jpg')}
@@ -129,6 +159,7 @@ class App extends Component {
               <br/>
               <br/>
             {score}
+
           </div>
         );
     }
