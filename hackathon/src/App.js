@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import './App.css';
 import TextField from '@material-ui/core/TextField'
-import CardMedia from '@material-ui/core/CardMedia';
-import Card from '@material-ui/core/Card'
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { withStyles } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 import Image from 'material-ui-image';
 import Fab from '@material-ui/core/Fab';
@@ -16,25 +15,6 @@ const ScoreTotal = withStyles(theme =>({
   root: {
   },
 }))(CircularProgress);
-
-const styles = {
-    logo: {
-      height: "30%",
-      width: "30%",
-      paddingTop: '20%', // 16:9,
-      objectFit: "fit",
-      textAlign: "centered",
-      margin: "auto"
-  },
-    ratings: {
-      height: "30%",
-      width: "30%",
-      paddingTop: '20%', // 16:9,
-      objectFit: "fit",
-      margin: "auto",
-      float: "right"
-    }
-};
 
 class App extends Component {
     constructor(props) {
@@ -152,9 +132,9 @@ class App extends Component {
             }
         }
         else if (num === 1){
-            if(occ >= 2500);
+            if(occ >= 20000);
             else{
-                score -= ((2500 - occ)/2500) * 50;
+                score -= ((20000 - occ)/20000) * 50;
             }
         }
         return score;
@@ -166,57 +146,38 @@ class App extends Component {
         let longitude = this.state.long;
         let infoSection;
         let score;
-        let popScore;
-
 
         if (this.state.hasClicked) {
             score = this.calcScore(this.state.userType,this.state.July,test);
             score = score.toFixed(2);
-            if (this.state.userType === 0){
-                if(test >= 300){
-                    popScore = 100;
-                }
-                else{
-                    popScore -= ((500 - test)/500) * 100;
-                }
-            }
-            else if (this.state.userType === 1){
-                if(test >= 2500){
-                    popScore = 100;
-                }
-                else{
-                    popScore -= ((2500 - test)/2500) * 100;
-                }
-            }
-            console.log(popScore);
-          infoSection = <div style={{fontSize: "50px"}}>
+          infoSection = <div style={{fontSize: "20px"}}>
           <p id="info">{this.state.fish}<br/>
           {document.getElementById("info").scrollIntoView()}
           Score: {score}</p>
           <ScoreTotal variant = "static" value = {score} color = "secondary"/>
 
           {this.state.userType === 1 && <p>
-              There are {test} in Australia </p>
+              There have been {test} recorded occurrences in Australia </p>
 
 
           }
           {this.state.userType !== 1 && <p>
-               There are {test} in your local area</p>
+              There have been {test} recorded occurrences in your local area</p>
           }<p>
-          You are at {latitude}, {longitude}</p>
+          Your position is {latitude}, {longitude}</p>
             {score < 50 &&
                 //<CardMedia
                   //image={require('./pictures/sad.jpg')}
                   //style={styles.ratings}
                 ///>
-                <div>No Feesh</div>
+                <div>Unsustainable!</div>
             }
             {score >= 50 &&
                 //<CardMedia
                 //  image={require('./pictures/happy.jpg')}
                 //  style={styles.ratings}
                 ///>
-                <div>Go Feesh</div>
+                <div>Sustainable!</div>
             }
           </div>;
         } else {
@@ -227,9 +188,10 @@ class App extends Component {
 
         return (
             <div className="App">
-                <Container maxWidth="sm">
+                <Container maxWidth="sm" style ={{width: "20%", height : "20%"}}>
                     <Image
                         src={require("./pictures/fish.jpg")}
+                        //style={{width: '20%' , height: '20%'}}
                     />
                 </Container>
                 <br/>
@@ -245,14 +207,14 @@ class App extends Component {
                 <Grid container spacing={10} justify="center">
                     <Grid item>
                         <Box>
-                            <Fab onClick={this.shopperSearch} variant="extended" size="large" color="primary">
+                            <Fab onClick={this.shopperSearch} variant="extended" size="large">
                                 I am a shopper
                             </Fab>
                         </Box>
                     </Grid>
                     <Grid item>
                         <Box>
-                            <Fab onClick={this.fisherSearch} variant="extended" size="large" color="primary">
+                            <Fab onClick={this.fisherSearch} variant="extended" size="large">
                                 I am a fisher
                             </Fab>
                         </Box>
