@@ -33,8 +33,8 @@ class App extends Component {
     this.state = {
       StockCode: "",
       July: null,
-      number: 0,
-      canClick: false,
+      fish: "",
+      hasClicked: false,
       text: "",
      occurrences: null,
      lat : null,
@@ -43,7 +43,7 @@ class App extends Component {
   }
   myFetch(){
 
-      fetch(ap+this.state.text+"&lat="+this.state.lat+"&lon="+this.state.long+"&radius=9000000")
+      fetch(ap+this.state.fish+"&lat="+this.state.lat+"&lon="+this.state.long+"&radius=30")
          .then((response) => response.json())
 
          .then((res) =>
@@ -69,8 +69,9 @@ class App extends Component {
 
     }
   Search = () => {
-      this.setState({canClick: true})    
-      fetch("https://fishbase.ropensci.org/comnames?ComName=" + this.state.text)
+      this.setState({hasClicked: true})
+      this.setState({fish: this.state.text})
+      fetch("https://fishbase.ropensci.org/comnames?ComName=" + this.state.fish)
           .then(res => res.json())
           .then(
             (result) => {
@@ -113,9 +114,9 @@ class App extends Component {
         let latitude = this.state.lat;
         let longitude = this.state.long;
         let score;
-        if (this.state.canClick) {
+        if (this.state.hasClicked) {
           score = <div style={{fontSize: "50px"}}>
-          <p>There are {test} {this.state.text} in Australia<br/>You are at {latitude}, {longitude}<br/> I am coming for you</p>
+          <p>There are {test} {this.state.fish} in Australia<br/>You are at {latitude}, {longitude}<br/> I am coming for you</p>
             {this.state.July != null && <Card>
                 <CardMedia
                   image={require('./pictures/sad.jpg')}
