@@ -1,11 +1,15 @@
 import React, { Component } from "react";
 import './App.css';
-import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import CardMedia from '@material-ui/core/CardMedia';
 import Card from '@material-ui/core/Card'
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { withStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import Image from 'material-ui-image';
+import Fab from '@material-ui/core/Fab';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+
 const ap = "https://biocache-ws.ala.org.au/ws/occurrences/search?q=";
 
 const ScoreTotal = withStyles(theme =>({
@@ -134,6 +138,7 @@ class App extends Component {
               });
             }
           )
+
 }
     calcScore(num, spawn, occ) {
         let score = 100;
@@ -185,7 +190,8 @@ class App extends Component {
             }
             console.log(popScore);
           infoSection = <div style={{fontSize: "50px"}}>
-          <p>{this.state.fish}<br/>
+          <p id="info">{this.state.fish}<br/>
+          {document.getElementById("info").scrollIntoView()}
           Score: {score}</p>
           <ScoreTotal variant = "static" value = {score} color = "secondary"/>
 
@@ -198,54 +204,64 @@ class App extends Component {
                There are {test} in your local area</p>
           }<p>
           You are at {latitude}, {longitude}</p>
-            {score < 50 && <Card>
-                <CardMedia
-                  image={require('./pictures/sad.jpg')}
-                  style={styles.ratings}
-                />
-                No Feesh
-            </Card>}
-            {score >= 50 && <Card>
-                <CardMedia
-                  image={require('./pictures/happy.jpg')}
-                  style={styles.ratings}
-                />
-                Go Feesh
-            </Card>}
+            {score < 50 &&
+                //<CardMedia
+                  //image={require('./pictures/sad.jpg')}
+                  //style={styles.ratings}
+                ///>
+                <div>No Feesh</div>
+            }
+            {score >= 50 &&
+                //<CardMedia
+                //  image={require('./pictures/happy.jpg')}
+                //  style={styles.ratings}
+                ///>
+                <div>Go Feesh</div>
+            }
           </div>;
         } else {
-          infoSection = <div/>
+          infoSection = <div id="info"/>
         }
-        return (
-          <div className="App">
-              <Card>
-                  <CardMedia
-                    image={require('./pictures/fish.jpg')}
-                    title="Contemplative Reptile"
-                    style={styles.logo}
-                  />
-              </Card>
-              <br/>
-              <br/>
-              <TextField
-                  style={{width: "80%"}}
-                  variant="outlined"
-                  label="Enter Type of Fish"
-                  onChange={this.HandleText}
-              />
-              <br/>
-              <br/>
-              <Button onClick={this.shopperSearch} variant="contained" >
-                  I am a shopper
-              </Button>
-              <Button onClick={this.fisherSearch} variant="contained" >
-                  I am a fisher
-              </Button>
-              <br/>
-              <br/>
-            {infoSection}
 
-          </div>
+
+
+        return (
+            <div className="App">
+                <Container maxWidth="sm">
+                    <Image
+                        src={require("./pictures/fish.jpg")}
+                    />
+                </Container>
+                <br/>
+                <br/>
+                <TextField
+                    style={{width: "80%"}}
+                    variant="outlined"
+                    label="Enter Type of Fish"
+                    onChange={this.HandleText}
+                />
+                <br/>
+                <br/>
+                <Grid container spacing={10} justify="center">
+                    <Grid item>
+                        <Box>
+                            <Fab onClick={this.shopperSearch} variant="extended" size="large" color="primary">
+                                I am a shopper
+                            </Fab>
+                        </Box>
+                    </Grid>
+                    <Grid item>
+                        <Box>
+                            <Fab onClick={this.fisherSearch} variant="extended" size="large" color="primary">
+                                I am a fisher
+                            </Fab>
+                        </Box>
+                    </Grid>
+                </Grid>
+                <br/>
+                <br/>
+                {infoSection}
+            </div>
         );
     }
 }
