@@ -4,7 +4,8 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import CardMedia from '@material-ui/core/CardMedia';
 import Card from '@material-ui/core/Card'
-
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { makeStyles } from '@material-ui/core/styles';
 
 const ap = "https://biocache-ws.ala.org.au/ws/occurrences/search?q=";
 
@@ -39,20 +40,30 @@ class App extends Component {
      occurrences: null,
      lat : null,
      long : null,
+     userType: null,
     };
   }
-  myFetch(){
 
+  myLocalFetch(){
       fetch(ap+this.state.fish+"&lat="+this.state.lat+"&lon="+this.state.long+"&radius=30")
          .then((response) => response.json())
 
          .then((res) =>
-               {console.log(res.totalRecords)
-                console.log(res)
+               {//console.log(res.totalRecords)
+                //console.log(res)
                this.setState({occurrences: res.totalRecords})})
    }
+   myGlobalFetch(){
+       fetch(ap+this.state.fish)
+          .then((response) => response.json())
+
+          .then((res) =>
+                {//console.log(res.totalRecords)
+                 //console.log(res)
+                this.setState({occurrences: res.totalRecords})})
+    }
   HandleText = (e) =>{
-      console.log(e.target.value)
+     // console.log(e.target.value)
       this.setState({text:e.target.value})
   }
 
@@ -68,7 +79,16 @@ class App extends Component {
           }
 
     }
-  Search = () => {
+
+    shopperSearch = () =>{
+        this.Search(1)
+        this.setState({userType:1})
+    }
+    fisherSearch = () =>{
+        this.Search(0)
+        this.setState({userType:0})
+    }
+  Search = (num) => {
       this.setState({hasClicked: true})
       this.setState({fish: this.state.text})
       fetch("https://fishbase.ropensci.org/comnames?ComName=" + this.state.fish)
@@ -84,7 +104,11 @@ class App extends Component {
                         this.setState({
                           July: result.data[0].Jul
                         });
-                        this.myFetch();
+                        if (num === 1){
+                            this.myGlobalFetch()
+                        } else {
+                            this.myLocalFetch()
+                        }
                       },
                       // Note: it's important to handle errors here
                       // instead of a catch() block so that we don't swallow
@@ -108,23 +132,53 @@ class App extends Component {
             }
           )
 }
+    calcScore(num, spawn, occ) {
+        let score = 100;
+        if (spawn !== 0){
+            score -= 50;
+        }
+        if (num === 0){
+            if(occ >= 300);
+            else{
+                score -= ((500 - occ)/500) * 50;
+            }
+        }
+        else if (num === 1){
+            if(occ >= 2500);
+            else{
+                score -= ((2500 - occ)/2500) * 50;
+            }
+        }
+        return score;
+        }
 
     render(){
         let test = this.state.occurrences;
         let latitude = this.state.lat;
         let longitude = this.state.long;
+        let infoSection;
         let score;
+        score = this.calcScore(0,this.state.July,test);
+        score = score.toFixed(2);
         if (this.state.hasClicked) {
-          score = <div style={{fontSize: "50px"}}>
-          <p>There are {test} {this.state.fish} in Australia<br/>You are at {latitude}, {longitude}<br/> I am coming for you</p>
-            {this.state.July != null && <Card>
+          infoSection = <div style={{fontSize: "50px"}}>
+          <p>{this.state.fish}<br/>
+          Score: {score}</p>
+          {this.state.userType === 1 && <p>
+              There are {test} in  Australia </p>
+          }
+          {this.state.userType !== 1 && <p>
+               There are {test} in your local area</p>
+          }<p>
+          You are at {latitude}, {longitude}</p>
+            {score < 50 && <Card>
                 <CardMedia
                   image={require('./pictures/sad.jpg')}
                   style={styles.ratings}
                 />
                 No Feesh
             </Card>}
-            {this.state.July == null && <Card>
+            {score >= 50 && <Card>
                 <CardMedia
                   image={require('./pictures/happy.jpg')}
                   style={styles.ratings}
@@ -133,7 +187,7 @@ class App extends Component {
             </Card>}
           </div>;
         } else {
-          score = <div/>
+          infoSection = <div/>
         }
         return (
           <div className="App">
@@ -153,12 +207,16 @@ class App extends Component {
                   onChange={this.HandleText}
               />
               <br/>
-              <Button onClick={this.Search} variant="contained">
-                  Search
+              <br/>
+              <Button onClick={this.shopperSearch} variant="contained" >
+                  I am a shopper
+              </Button>
+              <Button onClick={this.fisherSearch} variant="contained" >
+                  I am a fisher
               </Button>
               <br/>
               <br/>
-            {score}
+            {infoSection}
 
           </div>
         );
