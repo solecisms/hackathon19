@@ -188,16 +188,16 @@ class App extends Component {
 
         return (
             <div className="App">
-                <Container maxWidth="sm" style ={{width: "20%", height : "20%"}}>
+                <Container maxWidth="sm" style ={{width: "15%", height : "15%"}}>
                     <Image
-                        src={require("./pictures/fish.jpg")}
+                        src={require("./pictures/perch.jpg")}
                         //style={{width: '20%' , height: '20%'}}
                     />
                 </Container>
-                <br/>
+
                 <br/>
                 <TextField
-                    style={{width: "80%"}}
+                    style={{width: "60%"}}
                     variant="outlined"
                     label="Enter Type of Fish"
                     onChange={this.HandleText}
