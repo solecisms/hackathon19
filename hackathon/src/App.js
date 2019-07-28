@@ -151,8 +151,7 @@ class App extends Component {
             score = this.calcScore(this.state.userType,this.state.July,test);
             score = score.toFixed(2);
           infoSection = <div style={{fontSize: "20px"}}>
-          <p id="info">{this.state.fish}<br/>
-          {document.getElementById("info").scrollIntoView()}
+          <p>{this.state.fish}<br/>
           Score: {score}</p>
           <ScoreTotal variant = "static" value = {score} color = "secondary"/>
 
@@ -181,7 +180,7 @@ class App extends Component {
             }
           </div>;
         } else {
-          infoSection = <div id="info"/>
+          infoSection = <div/>
         }
 
 
